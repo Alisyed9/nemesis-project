@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load dashboard_extras %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <a class="small text-secondary" href="{% url 'dashboard:alerts' %}">← Alerts</a>
+    <h1 class="h3 mt-2 mb-1">{{ alert.title }}</h1>
+    <p class="text-secondary mb-0">Alert #{{ alert.pk }} · {{ alert.created_at|date:"Y-m-d H:i:s" }}</p>
+  </div>
+  {% if not alert.is_resolved %}
+  <form method="post" action="{% url 'dashboard:resolve_alert' alert.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-light">Mark resolved</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <div class="d-flex gap-2 mb-3">
+        {% include "dashboard/_severity_badge.html" with item=alert %}
+        {% if alert.is_resolved %}
+          <span class="badge text-bg-secondary">Resolved</span>
+        {% else %}
+          <span class="badge text-bg-success">Open</span>
+        {% endif %}
+      </div>
+      <h2 class="h6 text-secondary">Description</h2>
+      <pre class="raw-log">{{ alert.description|default:"—" }}</pre>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-4">
+      <h2 class="h6 text-secondary">Related event</h2>
+      <p class="mb-2">
+        <a href="{% url 'dashboard:event_detail' alert.related_event.pk %}">Event #{{ alert.related_event.pk }}</a>
+      </p>
+      <dl class="row mb-0 small">
+        <dt class="col-sm-4">Time</dt>
+        <dd class="col-sm-8">{{ alert.related_event.timestamp|date:"Y-m-d H:i:s" }}</dd>
+        <dt class="col-sm-4">Source</dt>
+        <dd class="col-sm-8">{{ alert.related_event.source.name }}</dd>
+        <dt class="col-sm-4">Severity</dt>
+        <dd class="col-sm-8">{% include "dashboard/_severity_badge.html" with item=alert.related_event %}</dd>
+        <dt class="col-sm-4">User / IP</dt>
+        <dd class="col-sm-8">{{ alert.related_event.username|default:"—" }} / {{ alert.related_event.ip_address|default:"—" }}</dd>
+        <dt class="col-sm-4">Message</dt>
+        <dd class="col-sm-8">{{ alert.related_event.message }}</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+{% endblock %}

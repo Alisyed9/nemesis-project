@@ -1,0 +1,4 @@
+{% load dashboard_extras %}
+<span class="badge rounded-pill {{ item.severity|severity_badge }}">
+  {{ item.get_severity_display }}
+</span>
