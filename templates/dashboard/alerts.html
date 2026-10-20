@@ -2,31 +2,33 @@
 {% load dashboard_extras %}
 
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+<div class="page-heading page-heading-tight">
   <div>
-    <h1 class="h3 mb-1">Alerts</h1>
-    <p class="text-secondary mb-0">Rule matches linked to the event that triggered them.</p>
+    <div class="eyebrow">Operations / Alerts</div>
+    <h1>Alert center</h1>
+    <p>Rule matches linked to the event that triggered them.</p>
   </div>
-  <div class="d-flex flex-wrap gap-2 align-items-center">
-    <div class="btn-group btn-group-sm" role="group" aria-label="Alert status filter">
-      <a class="btn btn-outline-secondary {% if status == 'all' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?severity={{ severity }}">All</a>
-      <a class="btn btn-outline-secondary {% if status == 'open' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?status=open&severity={{ severity }}">Open</a>
-      <a class="btn btn-outline-secondary {% if status == 'resolved' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?status=resolved&severity={{ severity }}">Resolved</a>
+  <div class="filter-bar">
+    <div class="segmented" role="group" aria-label="Alert status filter">
+      <a class="{% if status == 'all' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?severity={{ severity }}">All</a>
+      <a class="{% if status == 'open' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?status=open&severity={{ severity }}">Open</a>
+      <a class="{% if status == 'resolved' %}active{% endif %}" href="{% url 'dashboard:alerts' %}?status=resolved&severity={{ severity }}">Resolved</a>
     </div>
-    <form method="get" class="d-flex align-items-center gap-2">
+    <form method="get" class="filter-select">
       <input type="hidden" name="status" value="{{ status }}">
-      <label for="severity-filter" class="small text-secondary">Severity</label>
-      <select id="severity-filter" name="severity" class="form-select form-select-sm" onchange="this.form.submit()">
+      <label for="severity-filter">Severity</label>
+      <select id="severity-filter" name="severity">
         <option value="all" {% if severity == 'all' %}selected{% endif %}>All severities</option>
         {% for value, label in severity_choices %}
           <option value="{{ value }}" {% if severity == value %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
+      <button type="submit" class="button button-small button-quiet">Apply</button>
     </form>
   </div>
 </div>
 
-<div class="panel">
+<div class="panel data-panel">
   <div class="table-responsive">
     <table class="table table-sm table-hover align-middle mb-0">
       <thead>
@@ -43,7 +45,7 @@
       <tbody>
         {% for alert in page_obj %}
         <tr class="{{ alert.severity|severity_row }}">
-          <td><a href="{% url 'dashboard:alert_detail' alert.pk %}">{{ alert.pk }}</a></td>
+          <td><a class="record-id" href="{% url 'dashboard:alert_detail' alert.pk %}">#{{ alert.pk }}</a></td>
           <td class="text-nowrap">{{ alert.created_at|date:"Y-m-d H:i:s" }}</td>
           <td>{% include "dashboard/_severity_badge.html" with item=alert %}</td>
           <td class="text-truncate-cell">
@@ -56,9 +58,9 @@
           </td>
           <td>
             {% if alert.is_resolved %}
-              <span class="badge text-bg-secondary">Resolved</span>
+              <span class="status-badge resolved">Resolved</span>
             {% else %}
-              <span class="badge text-bg-success">Open</span>
+              <span class="status-badge open">Open</span>
             {% endif %}
           </td>
           <td class="text-end">
@@ -66,7 +68,7 @@
             <form method="post" action="{% url 'dashboard:resolve_alert' alert.pk %}" class="d-inline">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ request.get_full_path }}">
-              <button type="submit" class="btn btn-sm btn-outline-light">Resolve</button>
+              <button type="submit" class="button button-small button-quiet">Resolve</button>
             </form>
             {% endif %}
           </td>

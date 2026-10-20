@@ -2,15 +2,16 @@
 {% load dashboard_extras %}
 
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+<div class="page-heading page-heading-tight">
   <div>
-    <h1 class="h3 mb-1">Rules Manager</h1>
-    <p class="text-secondary mb-0">Maintain the signatures used by the detection engine.</p>
+    <div class="eyebrow">Configuration / Detection</div>
+    <h1>Rules manager</h1>
+    <p>Maintain the signatures used by the detection engine.</p>
   </div>
-  <a class="btn btn-primary" href="{% url 'dashboard:rule_create' %}">Add detection rule</a>
+  <a class="button button-primary" href="{% url 'dashboard:rule_create' %}">Add detection rule <span>+</span></a>
 </div>
 
-<div class="panel">
+<div class="panel data-panel">
   <div class="table-responsive">
     <table class="table table-sm table-hover align-middle mb-0">
       <thead>
@@ -38,8 +39,8 @@
           </td>
           <td class="text-nowrap">{{ rule.created_at|date:"Y-m-d H:i" }}</td>
           <td class="text-end text-nowrap">
-            <a class="btn btn-sm btn-outline-light" href="{% url 'dashboard:rule_edit' rule.pk %}">Edit</a>
-            <a class="btn btn-sm btn-outline-danger" href="{% url 'dashboard:rule_delete' rule.pk %}">Delete</a>
+            <a class="button button-small button-quiet" href="{% url 'dashboard:rule_edit' rule.pk %}">Edit</a>
+            <a class="button button-small button-danger" href="{% url 'dashboard:rule_delete' rule.pk %}">Delete</a>
           </td>
         </tr>
         {% empty %}
