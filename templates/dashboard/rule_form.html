@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-8 col-xxl-7">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <a class="small text-secondary" href="{% url 'dashboard:rules' %}">← Rules Manager</a>
+        <h1 class="h3 mt-2 mb-1">{{ form_heading }}</h1>
+        <p class="text-secondary mb-0">Configure the pattern and severity used for matching.</p>
+      </div>
+    </div>
+
+    <div class="panel p-4">
+      <form method="post" action="{% if rule %}{% url 'dashboard:rule_edit_submit' rule.pk %}{% else %}{% url 'dashboard:rule_create_submit' %}{% endif %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="mb-3">
+          <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+          {{ form.name }}
+          {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+          {{ form.description }}
+          {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.pattern.id_for_label }}" class="form-label">Pattern</label>
+          {{ form.pattern }}
+          <div class="form-text">Regex or keyword evaluated against parsed log lines.</div>
+          {% for error in form.pattern.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="{{ form.severity.id_for_label }}" class="form-label">Severity</label>
+            {{ form.severity }}
+            {% for error in form.severity.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check mb-2">{{ form.is_active }} <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Rule is active</label></div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+          <a class="btn btn-outline-secondary" href="{% url 'dashboard:rules' %}">Cancel</a>
+          <button type="submit" class="btn btn-primary">Save rule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

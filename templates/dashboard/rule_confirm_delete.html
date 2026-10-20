@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <h1 class="h4 mb-3">Delete detection rule?</h1>
+      <p class="text-secondary">This will permanently delete <strong>{{ rule.name }}</strong>. Existing events and alerts are not changed.</p>
+      <form method="post" action="{% url 'dashboard:rule_delete_submit' rule.pk %}" class="d-flex justify-content-end gap-2">
+        {% csrf_token %}
+        <a class="btn btn-outline-secondary" href="{% url 'dashboard:rules' %}">Cancel</a>
+        <button type="submit" class="btn btn-danger">Delete rule</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

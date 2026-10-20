@@ -2,7 +2,7 @@
 
 Folder name: `Nemesis`  
 Django project package: `pysiem`  
-Current milestone: **4 (Dashboard UI)**
+Current milestone: **5 (Rules Manager + Alerts Page)**
 
 ## Completed in Milestone 1
 
@@ -74,7 +74,16 @@ from core.services import (
 3. `python manage.py start_collector --once` or `python manage.py start_collector`
 4. Review the dashboard at http://127.0.0.1:8000/ (admin still at `/admin/`)
 
-## Notes for Milestone 5
+## Completed in Milestone 5
+
+- Rules Manager at `/rules/` with list, add, edit, and delete workflows
+- Detection rule CRUD uses a Django `ModelForm` with success/error messages
+- Alerts page filters by status and severity while preserving pagination state
+- Alert rows show severity colors, resolution controls, and related event context
+- Navigation links expose Rules and Alerts from every dashboard page
+- Models and `core/services/` were **not** changed
+
+## Notes for Final Milestone
 
 - Email/webhook delivery can replace the terminal `notify_high_severity_alert` placeholder.
 - File offsets are still in-memory for the collector process.

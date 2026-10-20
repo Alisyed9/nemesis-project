@@ -12,7 +12,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET, require_POST
 
-from core.models import Alert, Event, Severity
+from core.models import Alert, DetectionRule, Event, Severity
+
+from dashboard.forms import DetectionRuleForm
 
 RECENT_LIMIT = 15
 PAGE_SIZE = 25
@@ -83,7 +85,7 @@ def event_detail(request: HttpRequest, pk: int) -> HttpResponse:
 
 @require_GET
 def alert_list(request: HttpRequest) -> HttpResponse:
-    """Paginated alerts, defaulting to open items when `?status=open`."""
+    """Paginated alerts with status and severity filters."""
     queryset = Alert.objects.select_related(
         "related_event",
         "related_event__source",
@@ -94,6 +96,13 @@ def alert_list(request: HttpRequest) -> HttpResponse:
     elif status == "resolved":
         queryset = queryset.filter(is_resolved=True)
 
+    severity = request.GET.get("severity", "all")
+    valid_severities = {choice.value for choice in Severity}
+    if severity in valid_severities:
+        queryset = queryset.filter(severity=severity)
+    else:
+        severity = "all"
+
     paginator = Paginator(queryset, PAGE_SIZE)
     page = paginator.get_page(request.GET.get("page"))
     return render(
@@ -103,6 +112,8 @@ def alert_list(request: HttpRequest) -> HttpResponse:
             "page_title": "Alerts",
             "page_obj": page,
             "status": status,
+            "severity": severity,
+            "severity_choices": Severity.choices,
         },
     )
 
@@ -139,3 +150,116 @@ def resolve_alert(request: HttpRequest, pk: int) -> HttpResponse:
     if next_url:
         return redirect(next_url)
     return redirect("dashboard:alert_detail", pk=alert.pk)
+
+
+@require_GET
+def rule_list(request: HttpRequest) -> HttpResponse:
+    """List all detection rules for operator review."""
+    return render(
+        request,
+        "dashboard/rules.html",
+        {
+            "page_title": "Rules Manager",
+            "rules": DetectionRule.objects.all(),
+        },
+    )
+
+
+@require_GET
+def rule_create(request: HttpRequest) -> HttpResponse:
+    """Render the new detection rule form."""
+    return render(
+        request,
+        "dashboard/rule_form.html",
+        {
+            "page_title": "Add Detection Rule",
+            "form": DetectionRuleForm(),
+            "form_heading": "Add detection rule",
+        },
+    )
+
+
+@require_POST
+def rule_create_submit(request: HttpRequest) -> HttpResponse:
+    """Validate and save a new detection rule."""
+    form = DetectionRuleForm(request.POST)
+    if form.is_valid():
+        rule = form.save()
+        messages.success(request, f'Detection rule "{rule.name}" created.')
+        return redirect("dashboard:rules")
+
+    messages.error(request, "The detection rule could not be created. Check the form.")
+    return render(
+        request,
+        "dashboard/rule_form.html",
+        {
+            "page_title": "Add Detection Rule",
+            "form": form,
+            "form_heading": "Add detection rule",
+        },
+        status=400,
+    )
+
+
+@require_GET
+def rule_edit(request: HttpRequest, pk: int) -> HttpResponse:
+    """Render the edit form for an existing detection rule."""
+    rule = get_object_or_404(DetectionRule, pk=pk)
+    return render(
+        request,
+        "dashboard/rule_form.html",
+        {
+            "page_title": "Edit Detection Rule",
+            "form": DetectionRuleForm(instance=rule),
+            "form_heading": f"Edit detection rule #{rule.pk}",
+            "rule": rule,
+        },
+    )
+
+
+@require_POST
+def rule_edit_submit(request: HttpRequest, pk: int) -> HttpResponse:
+    """Validate and save edits to an existing detection rule."""
+    rule = get_object_or_404(DetectionRule, pk=pk)
+    form = DetectionRuleForm(request.POST, instance=rule)
+    if form.is_valid():
+        rule = form.save()
+        messages.success(request, f'Detection rule "{rule.name}" updated.')
+        return redirect("dashboard:rules")
+
+    messages.error(request, "The detection rule could not be updated. Check the form.")
+    return render(
+        request,
+        "dashboard/rule_form.html",
+        {
+            "page_title": "Edit Detection Rule",
+            "form": form,
+            "form_heading": f"Edit detection rule #{rule.pk}",
+            "rule": rule,
+        },
+        status=400,
+    )
+
+
+@require_GET
+def rule_delete(request: HttpRequest, pk: int) -> HttpResponse:
+    """Render a confirmation page before deleting a detection rule."""
+    rule = get_object_or_404(DetectionRule, pk=pk)
+    return render(
+        request,
+        "dashboard/rule_confirm_delete.html",
+        {
+            "page_title": "Delete Detection Rule",
+            "rule": rule,
+        },
+    )
+
+
+@require_POST
+def rule_delete_submit(request: HttpRequest, pk: int) -> HttpResponse:
+    """Delete a detection rule after confirmation."""
+    rule = get_object_or_404(DetectionRule, pk=pk)
+    rule_name = rule.name
+    rule.delete()
+    messages.success(request, f'Detection rule "{rule_name}" deleted.')
+    return redirect("dashboard:rules")

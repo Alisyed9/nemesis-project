@@ -38,6 +38,10 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'alerts' or request.resolver_match.url_name == 'alert_detail' %}active{% endif %}"
                href="{% url 'dashboard:alerts' %}">Alerts</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'rule' in request.resolver_match.url_name %}active{% endif %}"
+               href="{% url 'dashboard:rules' %}">Rules</a>
+          </li>
         </ul>
         <a class="btn btn-outline-secondary btn-sm" href="/admin/">Admin</a>
       </div>

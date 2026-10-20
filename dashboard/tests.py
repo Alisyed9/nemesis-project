@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from core.models import Alert, Event, LogSource, Severity
+from core.models import Alert, DetectionRule, Event, LogSource, Severity
 
 
 class DashboardViewTests(TestCase):
@@ -52,3 +52,59 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.alert.refresh_from_db()
         self.assertTrue(self.alert.is_resolved)
+
+    def test_alert_list_filters_by_severity_and_shows_event_context(self):
+        low_alert = Alert.objects.create(
+            title="Low alert",
+            description="Low priority",
+            severity=Severity.LOW,
+            related_event=self.event,
+        )
+        response = self.client.get(
+            reverse("dashboard:alerts"),
+            {"severity": Severity.HIGH},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.alert.title)
+        self.assertNotContains(response, low_alert.title)
+        self.assertContains(response, self.event.message)
+
+    def test_rule_crud_uses_form_and_messages(self):
+        create_response = self.client.post(
+            reverse("dashboard:rule_create_submit"),
+            {
+                "name": "SSH failures",
+                "description": "Detect failed SSH logins",
+                "pattern": r"Failed password",
+                "severity": Severity.HIGH,
+                "is_active": "on",
+            },
+            follow=True,
+        )
+        self.assertEqual(create_response.status_code, 200)
+        rule = DetectionRule.objects.get(name="SSH failures")
+        self.assertContains(create_response, "Detection rule &quot;SSH failures&quot; created.")
+
+        edit_response = self.client.post(
+            reverse("dashboard:rule_edit_submit", args=[rule.pk]),
+            {
+                "name": "SSH login failures",
+                "description": "Updated description",
+                "pattern": r"Failed password for",
+                "severity": Severity.CRITICAL,
+                "is_active": "on",
+            },
+            follow=True,
+        )
+        self.assertEqual(edit_response.status_code, 200)
+        rule.refresh_from_db()
+        self.assertEqual(rule.severity, Severity.CRITICAL)
+        self.assertContains(edit_response, "Detection rule &quot;SSH login failures&quot; updated.")
+
+        delete_response = self.client.post(
+            reverse("dashboard:rule_delete_submit", args=[rule.pk]),
+            follow=True,
+        )
+        self.assertEqual(delete_response.status_code, 200)
+        self.assertFalse(DetectionRule.objects.filter(pk=rule.pk).exists())
+        self.assertContains(delete_response, "Detection rule &quot;SSH login failures&quot; deleted.")
