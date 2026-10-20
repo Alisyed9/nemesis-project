@@ -170,6 +170,11 @@ a:hover {
   color: #e5edf5;
 }
 
+.empty-state-title {
+  color: #e5edf5;
+  font-weight: 600;
+}
+
 .rule-pattern {
   color: #b8d7ff;
   white-space: pre-wrap;

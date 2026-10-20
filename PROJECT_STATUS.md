@@ -2,7 +2,7 @@
 
 Folder name: `Nemesis`  
 Django project package: `pysiem`  
-Current milestone: **5 (Rules Manager + Alerts Page)**
+Current milestone: **Completed (Final Milestone 6)**
 
 ## Completed in Milestone 1
 
@@ -83,11 +83,20 @@ from core.services import (
 - Navigation links expose Rules and Alerts from every dashboard page
 - Models and `core/services/` were **not** changed
 
-## Notes for Final Milestone
+## Completed in Final Milestone 6
 
-- Email/webhook delivery can replace the terminal `notify_high_severity_alert` placeholder.
-- File offsets are still in-memory for the collector process.
-- Dashboard can later auto-refresh or filter by source / IP.
+- Added six realistic demo Detection Rules through `python manage.py seed_demo_data`
+- Added tracked auth.log-style sample data at `sample_data/auth.log`
+- Verified the complete sample flow: log file → parser → rule engine → Event + Alert → dashboard
+- Improved empty states for Events, Alerts, Rules Manager, and dashboard tables
+- Finalized README setup, feature, rule authoring, testing, and sample-flow instructions
+- Added end-to-end collector coverage and demo-rule signature coverage
+- Project status: **Completed**
+
+## Final notes
+
+- Collector file offsets remain in memory and reset when the process restarts.
+- High/Critical notification delivery remains terminal-only for local development.
 
 ## Current project structure
 
@@ -101,6 +110,8 @@ Nemesis/
 ├── static/
 │   └── css/
 │       └── dashboard.css
+├── sample_data/
+│   └── auth.log
 ├── templates/
 │   ├── base.html
 │   └── dashboard/
@@ -112,6 +123,7 @@ Nemesis/
 │   ├── views.py
 │   ├── management/
 │   │   └── commands/
+│   │       ├── seed_demo_data.py
 │   │       └── start_collector.py
 │   ├── services/
 │   │   ├── collector.py

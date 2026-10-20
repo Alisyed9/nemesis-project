@@ -73,7 +73,10 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-secondary py-4 text-center">No alerts match this filter.</td>
+          <td colspan="7" class="text-secondary py-5 text-center">
+            <div class="empty-state-title">No alerts match this filter</div>
+            <div class="small mt-1">Try another severity or status, or collect the sample auth.log.</div>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

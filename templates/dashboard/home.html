@@ -74,7 +74,8 @@
             {% empty %}
             <tr>
               <td colspan="5" class="text-secondary py-4 text-center">
-                No events yet. Run <code>python manage.py start_collector --once</code>.
+                No events yet. Run <code>python manage.py seed_demo_data</code>, then start the collector.
+                <a class="d-block mt-2" href="{% url 'dashboard:events' %}">Refresh events</a>
               </td>
             </tr>
             {% endfor %}
