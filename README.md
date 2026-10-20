@@ -1,54 +1,111 @@
-# PySIEM
+# Nemesis
 
-Python Security Information & Event Manager — a Django project for ingesting logs, detecting threats, and reviewing alerts.
+**Nemesis** is a lightweight local SIEM (Security Information and Event Management) tool built with Django.  
+It monitors log files, detects suspicious activities using customizable rules, generates alerts, and provides a clean dashboard for monitoring.
 
-This repository folder is named **Nemesis**. The Django project package is **`pysiem`**.
+---
 
-## Milestone 1 (current)
+## Current Features (Up to Milestone 4)
 
-Foundation only: project layout, SQLite, and core models (`LogSource`, `DetectionRule`, `Event`, `Alert`). Collector, parser, rule engine, and dashboard UI are **not** implemented yet.
+- Log collection from files
+- Parsing of Linux auth.log style logs
+- Rule-based detection engine
+- Alert generation with severity levels (Critical, High, Medium, Low)
+- Basic correlation (e.g. multiple failed logins from same IP)
+- Modern dark-themed Dashboard
+- View recent Events and Alerts
+- SQLite database
 
-## Requirements
+---
 
-- Python 3.11+
-- pip
+## Tech Stack
 
-## Setup
+- **Backend:** Django
+- **Database:** SQLite
+- **Frontend:** Bootstrap 5 (CDN)
+- **Language:** Python 3.10+
 
-From the project root (`Nemesis`):
+---
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
+## Project Structure
+
+```
+Nemesis/
+├── core/
+│   ├── models.py
+│   ├── services/
+│   │   ├── collector.py
+│   │   ├── parser.py
+│   │   └── rule_engine.py
+│   └── management/commands/start_collector.py
+├── dashboard/
+│   ├── views.py
+│   └── templates/
+├── PROJECT_STATUS.md
+└── manage.py
 ```
 
-On macOS/Linux, activate the venv with `source .venv/bin/activate` instead of the PowerShell script.
+---
 
-Open:
+## How to Run
 
-- Admin: http://127.0.0.1:8000/admin/
+1. **Clone / Extract the project**
 
-Use the admin site to create log sources, detection rules, events, and alerts.
+2. **Create virtual environment (recommended):**
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate          # Windows
+   # source venv/bin/activate     # Linux/Mac
+   ```
 
-## Apps
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-| App | Role |
-| --- | --- |
-| `core` | Domain models and (later) collection / detection |
-| `dashboard` | Operator UI (later milestones) |
+4. **Run migrations:**
+   ```bash
+   python manage.py migrate
+   ```
 
-Import models from `core.models`:
+5. **Create superuser (optional):**
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-```python
-from core.models import Alert, DetectionRule, Event, LogSource, Severity
+6. **Start the server:**
+   ```bash
+   python manage.py runserver
+   ```
+
+7. **Start Log Collector (in another terminal):**
+   ```bash
+   python manage.py start_collector
+   ```
+
+8. Open browser: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## Admin Panel
+
+- URL: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+- You can manage Log Sources, Detection Rules, Events, and Alerts from here.
+
+---
+
+## Next Steps (Upcoming)
+
+- Rules Manager (Add/Edit/Delete rules from UI)
+- Advanced Alerts page with filters
+- Mark alerts as resolved
+- Better reporting
+
+---
+
+## Notes
+
+- Currently supports Linux `auth.log` style logs.
+- Rules are regex based.
+- This is an educational / portfolio project.
 ```
-
-## Configuration
-
-- Database: SQLite at `db.sqlite3` (`pysiem/settings.py`)
-- Debug is on for local development. Change `SECRET_KEY` before any real deployment.
