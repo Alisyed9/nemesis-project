@@ -142,8 +142,74 @@ Nemesis/
 ```
 
 ## Local development notes
+## Real-data validation (Kali Linux VM)
 
-- SQLite database: `db.sqlite3`
-- The development settings use `DEBUG = True`; change the secret key and deployment settings before production use.
-- Collector file offsets are currently in memory and reset when the process restarts.
-- Email/webhook delivery is intentionally outside this completed local milestone; high-severity notifications currently use the terminal.
+Nemesis was tested end to end on real logs exported from a Kali Linux virtual
+machine (VMware), replacing the bundled sample data.
+
+**How the data was collected**
+
+Recent Kali releases may not ship a `/var/log/auth.log` file, so the systemd
+journal was exported instead:
+
+```bash
+sudo journalctl --no-pager -o short > kali_full.log
+```
+
+The file was registered as a `LogSource` in the Django admin (absolute path)
+and ingested with `python manage.py start_collector --once`.
+
+**Result**
+
+- Over 13,000 real log lines were parsed into normalized events.
+- Detection rules generated alerts with Critical and High severities.
+- Controlled test: three deliberately wrong passwords were entered at the Kali
+  GUI login. All three attempts were ingested as
+  `pam_unix(lightdm:auth): authentication failure` events with correct
+  timestamps.
+
+## Reliability improvements
+
+**SQLite "database is locked" fix**
+
+Running the collector while editing or deleting a log source in the Django
+admin caused `OperationalError: database is locked`. SQLite allows a single
+writer at a time, and deleting a `LogSource` cascades to all its events and
+alerts. Fixed in three layers:
+
+1. **Database configuration** (`settings.py`): WAL journal mode, a 20 second
+   lock timeout, and `IMMEDIATE` transactions.
+2. **Collector** (`core/services/collector.py`):
+   - Each chunk of log lines is saved in one atomic transaction, so a failed
+     attempt leaves no partial data.
+   - Retry with back-off when the database is locked.
+   - The file offset only advances after a successful save, so a failed chunk
+     is retried on the next cycle.
+   - The source list is reloaded every cycle, so sources deleted or disabled
+     in the admin do not crash the collector.
+3. **Admin** (`core/admin.py`): a `DatabaseBusyMixin` shows a friendly error
+   message instead of a 500 page when the database is busy.
+
+## Findings from real-data testing
+
+- **Rule coverage gap:** the default `Failed password` rule matches SSH
+  failures only. Local GUI login failures (`authentication failure`) need
+  their own rule.
+- **False positives:** the generic error/critical rule flags routine desktop
+  errors as Critical, which causes alert fatigue. Severity needs tuning.
+- **Self-generated alerts:** administrative `sudo` commands used to export the
+  logs triggered the suspicious-sudo rule.
+- **Local logins carry no IP address:** the `rhost` field is empty, so the
+  IP-based failed-login burst correlation cannot fire. Correlation by source
+  and time window is needed for local attacks.
+- **Timestamps:** events keep the log's own timestamp (for example 02:07 UTC),
+  while alerts use ingest time. This is expected.
+
+## Next steps
+
+- Add a rule for local authentication failures
+  (`authentication failure|Failed password|FAILED LOGIN|Invalid user`).
+- Tune or narrow the generic error and sudo rules.
+- Persist collector offsets to avoid duplicate events after a restart.
+- Time-window burst detection (for example 3 failures in 30 seconds).
+- Live log forwarding (rsyslog) and PostgreSQL for larger data volumes.
