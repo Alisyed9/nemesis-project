@@ -7,6 +7,7 @@
 </a>
 <a class="admin-dashboard-link" href="{% url 'dashboard:home' %}">← Back to Dashboard</a>
 {% endblock %}
+{% block dark-mode-vars %}{% endblock %}
 {% block usertools %}
 {% if has_permission %}
 <div id="user-tools" class="nemesis-user-tools">
@@ -22,7 +23,6 @@
       {% csrf_token %}
       <button type="submit">{% translate "Log out" %}</button>
     </form>
-    {% include "admin/color_theme_toggle.html" %}
   </nav>
 </div>
 {% endif %}
