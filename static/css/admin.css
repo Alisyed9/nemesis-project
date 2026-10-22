@@ -36,8 +36,68 @@ body {
 
 .nemesis-admin-brand img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; }
 .nemesis-admin-brand small { display: block; color: #a9bad6; font-size: 11px; font-weight: 400; }
-#user-tools { color: #dce7f7; }
-#user-tools a { border-bottom-color: #8de9df; }
+#user-tools { color: #f4f8ff; }
+#user-tools a { border-bottom-color: transparent; color: #f4f8ff; }
+.nemesis-user-tools {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.admin-user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #f4f8ff;
+  text-align: left;
+}
+.admin-user-greeting small,
+.admin-user-greeting strong {
+  display: block;
+}
+.admin-user-greeting small {
+  color: #b9c9e2;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.admin-user-greeting strong {
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.admin-user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+.admin-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-user-actions a,
+.admin-user-actions #logout-form button {
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #f4f8ff !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-user-actions a:hover,
+.admin-user-actions #logout-form button:hover {
+  color: #8de9df !important;
+}
+.admin-user-actions #logout-form {
+  margin: 0;
+}
 .admin-dashboard-link {
   display: inline-block;
   margin-left: 24px;
@@ -86,7 +146,95 @@ button, input[type=submit], .submit-row input, a.button { border-radius: 6px; }
 @media (max-width: 767px) {
   #header { padding: 12px 16px; }
   #content { padding: 16px; }
-  #user-tools { margin-top: 8px; text-align: left; }
+  #user-tools { margin-top: 12px; text-align: left; }
+  .nemesis-user-tools,
+  .admin-user-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .admin-user-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
   .nemesis-admin-brand { font-size: 18px; }
   .admin-dashboard-link { margin: 10px 0 0; }
+}
+
+html[data-theme="dark"] body {
+  color: #f1f5fb;
+}
+
+html[data-theme="dark"] .module h2,
+html[data-theme="dark"] .module caption {
+  background: #26364f;
+  color: #f7faff;
+}
+
+html[data-theme="dark"] .module h2 a,
+html[data-theme="dark"] .module caption a,
+html[data-theme="dark"] .module table th,
+html[data-theme="dark"] .module table th a,
+html[data-theme="dark"] .module table td,
+html[data-theme="dark"] .module table td a,
+html[data-theme="dark"] div#content h1,
+html[data-theme="dark"] #content h1,
+html[data-theme="dark"] #content h2,
+html[data-theme="dark"] #content h3,
+html[data-theme="dark"] #content h4 {
+  color: #f1f5fb !important;
+}
+
+html[data-theme="dark"] #recent-actions-module li,
+html[data-theme="dark"] #recent-actions-module li a,
+html[data-theme="dark"] #recent-actions-module .mini.quiet {
+  color: #e8eef8 !important;
+}
+html[data-theme="dark"] .form-row label,
+html[data-theme="dark"] .form-row p,
+html[data-theme="dark"] .form-row .help,
+html[data-theme="dark"] .help,
+html[data-theme="dark"] p.help,
+html[data-theme="dark"] div.breadcrumbs,
+html[data-theme="dark"] div.breadcrumbs a {
+  color: #e8eef8 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #f1f5fb;
+  }
+  .module h2,
+  .module caption {
+    background: #26364f;
+    color: #f7faff;
+  }
+  .module h2 a,
+  .module caption a,
+  .module table th,
+  .module table th a,
+  .module table td,
+  .module table td a,
+  div#content h1,
+  #content h1,
+  #content h2,
+  #content h3,
+  #content h4 {
+    color: #f1f5fb !important;
+  }
+  #recent-actions-module li,
+  #recent-actions-module li a,
+  #recent-actions-module .mini.quiet {
+    color: #e8eef8 !important;
+  }
+  .form-row label,
+  .form-row p,
+  .form-row .help,
+  .help,
+  p.help,
+  div.breadcrumbs,
+  div.breadcrumbs a {
+    color: #e8eef8 !important;
+  }
 }

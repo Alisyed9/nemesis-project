@@ -1,11 +1,31 @@
 {% extends "admin/base.html" %}
-{% load static %}
+{% load i18n static %}
 {% block title %}{{ title }} | Nemesis Admin{% endblock %}
 {% block branding %}
 <a href="{% url 'admin:index' %}" class="nemesis-admin-brand">
   <img src="{% static 'images/logo.jpg' %}" alt="Nemesis"> <span>Nemesis <small>Security administration</small></span>
 </a>
 <a class="admin-dashboard-link" href="{% url 'dashboard:home' %}">← Back to Dashboard</a>
+{% endblock %}
+{% block usertools %}
+{% if has_permission %}
+<div id="user-tools" class="nemesis-user-tools">
+  <div class="admin-user-greeting">
+    <span class="admin-user-avatar">{{ user.get_username|first|upper }}</span>
+    <span><small>{% translate "Signed in as" %}</small><strong>{% firstof user.get_short_name user.get_username %}</strong></span>
+  </div>
+  <nav class="admin-user-actions" aria-label="{% translate 'User menu' %}">
+    <a href="{% url 'dashboard:home' %}">Dashboard</a>
+    {% if site_url %}<a href="{{ site_url }}">{% translate "View site" %}</a>{% endif %}
+    {% if user.has_usable_password %}<a href="{% url 'admin:password_change' %}">{% translate "Change password" %}</a>{% endif %}
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+      {% csrf_token %}
+      <button type="submit">{% translate "Log out" %}</button>
+    </form>
+    {% include "admin/color_theme_toggle.html" %}
+  </nav>
+</div>
+{% endif %}
 {% endblock %}
 {% block extrastyle %}
 {{ block.super }}
