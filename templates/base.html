@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ page_title|default:"Dashboard" }}{% endblock %} · PySIEM</title>
+  <meta name="theme-color" content="#152d5b">
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/nemesis-mark.svg' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,7 +19,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <a class="brand" href="{% url 'dashboard:home' %}">
-        <span class="brand-mark">N</span>
+        <img class="brand-mark" src="{% static 'images/nemesis-mark.svg' %}" alt="Nemesis">
         <span><strong>PySIEM</strong><small>Nemesis security desk</small></span>
       </a>
       <div class="sidebar-label">Workspace</div>
@@ -44,7 +46,7 @@
     <div class="app-main">
       <header class="mobile-header">
         <a class="brand" href="{% url 'dashboard:home' %}">
-          <span class="brand-mark">N</span><strong>PySIEM</strong>
+          <img class="brand-mark" src="{% static 'images/nemesis-mark.svg' %}" alt="Nemesis"><strong>PySIEM</strong>
         </a>
         <a class="mobile-admin" href="/admin/">Admin ↗</a>
       </header>

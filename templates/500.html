@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong{% endblock %}
+{% block content %}
+<section class="panel error-panel" role="alert">
+  <div class="eyebrow">Error 500</div>
+  <h1>Nemesis could not complete that request</h1>
+  <p class="text-secondary">The incident has been recorded. Please try again, or return to the overview.</p>
+  <a class="button button-primary" href="{% url 'dashboard:home' %}">Return to overview</a>
+</section>
+{% endblock %}

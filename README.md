@@ -1,6 +1,6 @@
-# Nemesis
+# Nemesis — Version 2.0.0
 
-Nemesis is a lightweight local Security Information and Event Management (SIEM) tool built with Django. It reads Linux `auth.log`-style files, parses security events, evaluates configurable detection rules, creates severity-based alerts, and presents the results in a dark operator dashboard.
+Nemesis is a lightweight local Security Information and Event Management (SIEM) tool built with Django. It reads Linux `auth.log`-style files, parses security events, evaluates configurable detection rules, creates severity-based alerts, and presents the results in a responsive operator dashboard.
 
 ## Features
 
@@ -13,6 +13,8 @@ Nemesis is a lightweight local Security Information and Event Management (SIEM) 
 - Rules Manager with add, edit, delete, active/inactive, and validation workflows
 - Six realistic demo rules and a sample `auth.log` file
 - Django admin for managing sources, rules, events, and alerts
+- Responsive Version 2 interface with a shared Nemesis brand and redesigned admin console
+- Consistent 404/500 error pages and concise production logging
 
 ## Tech stack
 
@@ -81,7 +83,7 @@ Then process the sample file once:
 python manage.py start_collector --once
 ```
 
-Refresh the dashboard to see the generated events and alerts. High and Critical alerts are also printed in the collector terminal.
+Refresh the dashboard to see the generated events and alerts. High and Critical alerts are logged as concise warning records.
 
 The demo command is safe to run repeatedly: it updates the named sample source and rules instead of creating duplicates. Collector offsets are held in memory, so running a one-shot collection again intentionally reads the file again.
 
@@ -137,6 +139,8 @@ Nemesis/
 ├── sample_data/auth.log
 ├── templates/
 ├── static/css/dashboard.css
+├── static/css/admin.css
+├── static/images/nemesis-mark.svg
 ├── PROJECT_STATUS.md
 └── manage.py
 ```
@@ -213,3 +217,7 @@ alerts. Fixed in three layers:
 - Persist collector offsets to avoid duplicate events after a restart.
 - Time-window burst detection (for example 3 failures in 30 seconds).
 - Live log forwarding (rsyslog) and PostgreSQL for larger data volumes.
+- SQLite database: `db.sqlite3`
+- The development settings default to `DEBUG = True`; set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, and `DJANGO_ALLOWED_HOSTS` for production.
+- Collector file offsets are currently in memory and reset when the process restarts.
+- Email/webhook delivery is intentionally outside this completed local milestone; high-severity notifications are logged concisely.

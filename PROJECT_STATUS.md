@@ -2,7 +2,7 @@
 
 Folder name: `Nemesis`  
 Django project package: `pysiem`  
-Current milestone: **Completed (Final Milestone 6)**
+Current milestone: **Completed (Milestone 7 — Version 2.0.0)**
 
 ## Completed in Milestone 1
 
@@ -96,7 +96,17 @@ from core.services import (
 ## Final notes
 
 - Collector file offsets remain in memory and reset when the process restarts.
-- High/Critical notification delivery remains terminal-only for local development.
+- High/Critical notification delivery remains log-only for local development.
+
+## Completed in Milestone 7 — Version 2
+
+- Reworked the operator interface for mobile, tablet, and desktop layouts while retaining the dark-blue sidebar.
+- Stacked Recent Events and Recent Alerts vertically on the Overview page.
+- Added the Nemesis shield logo as a shared dashboard/admin brand and favicon.
+- Replaced verbose high-severity terminal banners with concise structured warning logs.
+- Added a modern responsive admin theme and consistent project-level error pages.
+- Added `PROJECT_VERSION = "2.0.0"` and documented production configuration.
+- Release tag: `v2.0.0`.
 
 ## Current project structure
 

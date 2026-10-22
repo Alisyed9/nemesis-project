@@ -6,19 +6,21 @@ parser, or dashboard view settings here yet.
 """
 
 from pathlib import Path
+import os
 
 from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_VERSION = "2.0.0"
 
 # SECURITY WARNING: keep the secret key used in production secret.
-SECRET_KEY = "django-insecure-pysiem-milestone-1-dev-key-change-me"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-pysiem-milestone-1-dev-key-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production.
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() in {"1", "true", "yes"}
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS: list[str] = [host for host in os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if host]
 
 # Application definition
 INSTALLED_APPS = [
@@ -67,6 +69,11 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        "OPTIONS": {
+            "timeout": 25,
+            "transaction_mode": "IMMEDIATE",
+            "init_command": "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;",
+        },
     }
 }
 
@@ -106,4 +113,14 @@ MESSAGE_TAGS = {
     message_constants.SUCCESS: "success",
     message_constants.WARNING: "warning",
     message_constants.ERROR: "danger",
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+        "core": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+    },
 }

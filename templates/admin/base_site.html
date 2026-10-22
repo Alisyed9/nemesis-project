@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{{ title }} | Nemesis Admin{% endblock %}
+{% block branding %}
+<a href="{% url 'admin:index' %}" class="nemesis-admin-brand">
+  <img src="{% static 'images/nemesis-mark.svg' %}" alt=""> <span>Nemesis <small>Security administration</small></span>
+</a>
+{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}

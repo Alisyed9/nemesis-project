@@ -11,3 +11,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("dashboard.urls")),
 ]
+
+handler404 = "pysiem.views.page_not_found"
+handler500 = "pysiem.views.server_error"

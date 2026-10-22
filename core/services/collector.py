@@ -1,17 +1,12 @@
-"""
-Log file collector.
-
-Reads a path from LogSource.file_path, parses each line, evaluates rules,
-creates Event rows, and creates Alert rows when the rule engine matches.
-"""
-
 from __future__ import annotations
 
 import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable, TypeVar
+
+from django.db import IntegrityError, OperationalError, transaction
 
 from core.models import Alert, Event, LogSource
 from core.services.parser import parse_auth_log_line
@@ -23,6 +18,28 @@ from core.services.rule_engine import (
 )
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
+
+
+def run_with_retry(fn: Callable[[], T], retries: int = 5, delay: float = 0.5) -> T:
+    """
+    Run `fn` inside one atomic transaction.
+
+    If SQLite reports "database is locked", wait and retry. Because the whole
+    call is atomic, a failed attempt rolls back completely (no partial data).
+    """
+    for attempt in range(1, retries + 1):
+        try:
+            with transaction.atomic():
+                return fn()
+        except OperationalError as exc:
+            if "locked" in str(exc).lower() and attempt < retries:
+                logger.warning("Database locked, retry %s/%s", attempt, retries)
+                time.sleep(delay * attempt)
+                continue
+            raise
+    raise RuntimeError("unreachable")  # pragma: no cover
 
 
 @dataclass
@@ -47,8 +64,8 @@ def ingest_log_source(
     """
     Read `source.file_path` from `offset` to EOF.
 
-    Returns (stats, new_offset). Does not follow the file; call again
-    (or use `run_collector`) to pick up appended lines.
+    Returns (stats, new_offset). The whole chunk is saved atomically, so if
+    this raises, nothing was saved and the caller keeps the old offset.
     """
     stats = IngestStats(source_id=source.pk, source_name=source.name)
     path = Path(source.file_path)
@@ -58,7 +75,7 @@ def ingest_log_source(
 
     size = path.stat().st_size
     if size < offset:
-        # File was rotated/truncated — start from the beginning.
+        # File was rotated/truncated: start from the beginning.
         offset = 0
 
     with path.open("r", encoding="utf-8", errors="replace") as handle:
@@ -70,8 +87,15 @@ def ingest_log_source(
         return stats, new_offset
 
     lines = chunk.splitlines()
-    stats.lines_read = len(lines)
-    _process_lines(source, lines, stats)
+
+    def _attempt() -> IngestStats:
+        # Fresh stats on every attempt so retries never double-count.
+        attempt_stats = IngestStats(source_id=source.pk, source_name=source.name)
+        attempt_stats.lines_read = len(lines)
+        _process_lines(source, lines, attempt_stats)
+        return attempt_stats
+
+    stats = run_with_retry(_attempt)
     return stats, new_offset
 
 
@@ -100,15 +124,25 @@ def run_collector(
     loops = 0
 
     while True:
-        # Refresh source list each cycle so admin toggles take effect.
+        # Refresh source list each cycle so admin changes/deletes take effect.
         sources = _select_sources(source_id=source_id, file_path=file_path)
         for source in sources:
-            if source.pk not in offsets:
-                offsets[source.pk] = 0
-            stats, offsets[source.pk] = ingest_log_source(
-                source,
-                offset=offsets.get(source.pk, 0),
-            )
+            offsets.setdefault(source.pk, 0)
+            try:
+                stats, offsets[source.pk] = ingest_log_source(
+                    source,
+                    offset=offsets[source.pk],
+                )
+            except (OperationalError, IntegrityError):
+                # Offset was not advanced, so this chunk is retried next cycle.
+                logger.exception(
+                    "Database error while ingesting source %s; will retry.",
+                    source.name,
+                )
+                if once:
+                    raise
+                continue
+
             last_stats[source.pk] = stats
             if stats.events_created or stats.alerts_created:
                 logger.info(

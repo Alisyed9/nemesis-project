@@ -208,21 +208,13 @@ def notify_high_severity_alert(alert: Alert) -> None:
 
     label = alert.get_severity_display().upper()
     event = alert.related_event
-    banner = "=" * 72
-    message = (
-        f"\n{banner}\n"
-        f"!!! {label} ALERT !!!\n"
-        f"Alert ID : {alert.pk}\n"
-        f"Title    : {alert.title}\n"
-        f"Event ID : {event.pk}\n"
-        f"Source   : {event.source.name}\n"
-        f"User     : {event.username or '-'}\n"
-        f"IP       : {event.ip_address or '-'}\n"
-        f"Message  : {event.message}\n"
-        f"{banner}\n"
+    logger.warning(
+        "%s alert created: id=%s title=%s source=%s",
+        label,
+        alert.pk,
+        alert.title,
+        event.source.name,
     )
-    print(message, flush=True)
-    logger.warning("%s alert created: id=%s title=%s", label, alert.pk, alert.title)
 
 
 def _marked_title(title: str, severity: str) -> str:
