@@ -6,11 +6,14 @@
   --darkened-bg: #eef2f7;
   --hairline-color: #dce3ee;
   --link-fg: #08756c;
+  --admin-ink: #17233d;
+  --admin-muted: #4e5d78;
 }
 
 body {
   font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--body-bg);
+  color: var(--admin-ink);
 }
 
 #header {
@@ -35,9 +38,47 @@ body {
 .nemesis-admin-brand small { display: block; color: #a9bad6; font-size: 11px; font-weight: 400; }
 #user-tools { color: #dce7f7; }
 #user-tools a { border-bottom-color: #8de9df; }
+.admin-dashboard-link {
+  display: inline-block;
+  margin-left: 24px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-dashboard-link:hover { background: rgba(255, 255, 255, 0.12); }
 #content { max-width: 1480px; margin: 0 auto; }
 .module, .dashboard .module { border: 1px solid var(--hairline-color); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(23,45,91,.05); }
-.module h2, .module caption { background: #eaf0f8; color: var(--primary); }
+.module h2, .module caption {
+  background: #eaf0f8;
+  color: var(--primary);
+  font-weight: 700;
+}
+.module h2 a, .module caption a { color: var(--primary) !important; }
+.module table th, .module table th a { color: var(--admin-ink); }
+.module table td, .module table td a { color: var(--admin-ink); }
+.dashboard .module table tr th { background: #f7f9fc; }
+.object-tools a, .addlink, .changelink { color: var(--link-fg) !important; }
+fieldset h2, .form-row label, .form-row p, .form-row .help, .help, p.help {
+  color: var(--admin-ink);
+}
+div#content h1, #content h1, #content h2, #content h3, #content h4 {
+  color: var(--admin-ink);
+}
+div#content a { color: var(--link-fg); }
+div#content a:hover { color: var(--primary); }
+div#content .breadcrumbs a { color: var(--link-fg); }
+/* The recent-actions panel uses muted default admin text that is too faint here. */
+#recent-actions-module h2,
+#recent-actions-module h3,
+#recent-actions-module li,
+#recent-actions-module li a,
+#recent-actions-module .mini.quiet {
+  color: var(--admin-ink) !important;
+}
+#recent-actions-module .mini.quiet { color: var(--admin-muted) !important; }
 div.breadcrumbs { background: #fff; color: #60708c; border-bottom: 1px solid var(--hairline-color); }
 input, textarea, select, .form-row input { border-radius: 6px; border-color: var(--hairline-color); }
 input:focus, textarea:focus, select:focus { border-color: var(--secondary); }
@@ -47,4 +88,5 @@ button, input[type=submit], .submit-row input, a.button { border-radius: 6px; }
   #content { padding: 16px; }
   #user-tools { margin-top: 8px; text-align: left; }
   .nemesis-admin-brand { font-size: 18px; }
+  .admin-dashboard-link { margin: 10px 0 0; }
 }

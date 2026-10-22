@@ -5,6 +5,7 @@
 <a href="{% url 'admin:index' %}" class="nemesis-admin-brand">
   <img src="{% static 'images/logo.jpg' %}" alt="Nemesis"> <span>Nemesis <small>Security administration</small></span>
 </a>
+<a class="admin-dashboard-link" href="{% url 'dashboard:home' %}">← Back to Dashboard</a>
 {% endblock %}
 {% block extrastyle %}
 {{ block.super }}
