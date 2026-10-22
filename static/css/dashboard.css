@@ -133,7 +133,16 @@ code,
   flex: 0 0 auto;
   width: 2.1rem;
   height: 2.1rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   object-fit: contain;
+}
+
+.page-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
 }
 
 .sidebar-label {
@@ -506,9 +515,7 @@ code,
 .severity-dot.low { background: var(--low); }
 
 .dashboard-columns {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
+  width: 100%;
 }
 
 .table-responsive {

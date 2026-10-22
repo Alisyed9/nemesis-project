@@ -102,7 +102,7 @@ from core.services import (
 
 - Reworked the operator interface for mobile, tablet, and desktop layouts while retaining the dark-blue sidebar.
 - Stacked Recent Events and Recent Alerts vertically on the Overview page.
-- Added the Nemesis shield logo as a shared dashboard/admin brand and favicon.
+- Added the provided `logo.jpg` as a shared dashboard/admin brand and favicon.
 - Replaced verbose high-severity terminal banners with concise structured warning logs.
 - Added a modern responsive admin theme and consistent project-level error pages.
 - Added `PROJECT_VERSION = "2.0.0"` and documented production configuration.

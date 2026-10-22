@@ -31,7 +31,7 @@ body {
   font-weight: 700;
 }
 
-.nemesis-admin-brand img { width: 38px; height: 38px; }
+.nemesis-admin-brand img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; }
 .nemesis-admin-brand small { display: block; color: #a9bad6; font-size: 11px; font-weight: 400; }
 #user-tools { color: #dce7f7; }
 #user-tools a { border-bottom-color: #8de9df; }

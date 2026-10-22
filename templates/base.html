@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ page_title|default:"Dashboard" }}{% endblock %} · PySIEM</title>
   <meta name="theme-color" content="#152d5b">
-  <link rel="icon" type="image/svg+xml" href="{% static 'images/nemesis-mark.svg' %}">
+  <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpg' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/logo.jpg' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,7 +20,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <a class="brand" href="{% url 'dashboard:home' %}">
-        <img class="brand-mark" src="{% static 'images/nemesis-mark.svg' %}" alt="Nemesis">
+        <img class="brand-mark" src="{% static 'images/logo.jpg' %}" alt="Nemesis">
         <span><strong>PySIEM</strong><small>Nemesis security desk</small></span>
       </a>
       <div class="sidebar-label">Workspace</div>
@@ -46,11 +47,25 @@
     <div class="app-main">
       <header class="mobile-header">
         <a class="brand" href="{% url 'dashboard:home' %}">
-          <img class="brand-mark" src="{% static 'images/nemesis-mark.svg' %}" alt="Nemesis"><strong>PySIEM</strong>
+          <img class="brand-mark" src="{% static 'images/logo.jpg' %}" alt="Nemesis"><strong>PySIEM</strong>
         </a>
         <a class="mobile-admin" href="/admin/">Admin ↗</a>
       </header>
       <main class="content-wrap">
+    {% if request.resolver_match.url_name != 'home' %}
+      <div class="page-navigation" aria-label="Page navigation">
+        {% if request.resolver_match.url_name == 'event_detail' %}
+          <a class="button button-quiet button-small" href="{% url 'dashboard:events' %}">← Back to events</a>
+        {% elif request.resolver_match.url_name == 'alert_detail' %}
+          <a class="button button-quiet button-small" href="{% url 'dashboard:alerts' %}">← Back to alerts</a>
+        {% elif 'rule' in request.resolver_match.url_name %}
+          <a class="button button-quiet button-small" href="{% url 'dashboard:rules' %}">← Back to rules</a>
+        {% else %}
+          <a class="button button-quiet button-small" href="{% url 'dashboard:home' %}">← Back to overview</a>
+        {% endif %}
+        <a class="button button-quiet button-small" href="{% url 'dashboard:home' %}">Overview</a>
+      </div>
+    {% endif %}
     {% if messages %}
       <div class="message-stack">
         {% for message in messages %}

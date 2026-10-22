@@ -140,7 +140,7 @@ Nemesis/
 ├── templates/
 ├── static/css/dashboard.css
 ├── static/css/admin.css
-├── static/images/nemesis-mark.svg
+├── static/images/logo.jpg
 ├── PROJECT_STATUS.md
 └── manage.py
 ```
